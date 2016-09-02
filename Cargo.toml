@@ -1,0 +1,10 @@
+[package]
+name = "hasher"
+version = "0.1.0"
+authors = ["xiongmaomaomao <pasapasa.va1104@gmail.com>"]
+
+[dependencies]
+clap = "2"
+colored = "1.3"
+log = "0.3"
+env_logger = "0.3"
