@@ -14,7 +14,7 @@ use std::result::Result;
 fn main() {
     env_logger::init().unwrap();
 
-    let Args { ref file_path, ref algorithms } = match extract_args() {
+    let Args { ref file_path, ref algorithm } = match extract_args() {
         Ok(args) => args,
         Err(ref message) => {
             error!("{}", message);
@@ -24,7 +24,7 @@ fn main() {
 
     info!("Given file path: {}", file_path);
 
-    if let Err(error) = hasher::runner::run(file_path, algorithms) {
+    if let Err(error) = hasher::runner::run(file_path, algorithm) {
         error!("Failed. error: {}", error);
         std::process::exit(error.raw_os_error().unwrap_or(1));
     };
@@ -32,7 +32,7 @@ fn main() {
 
 struct Args {
     file_path: String,
-    algorithms: String,
+    algorithm: String,
 }
 
 fn extract_args() -> Result<Args, String> {
@@ -56,7 +56,7 @@ fn extract_args() -> Result<Args, String> {
         (algorithm, Some(sub_matches)) =>
             Ok(Args {
                 file_path: sub_matches.value_of("path").unwrap().to_owned(),
-                algorithms: algorithm.to_owned(),
+                algorithm: algorithm.to_owned(),
             }),
         _ => Err(matches.usage().to_owned()),
     }
