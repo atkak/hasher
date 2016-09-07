@@ -14,7 +14,7 @@ use std::io;
 use std::fs::File;
 use std::path::Path;
 use std::result::Result;
-use hasher::HashAlgorithms;
+use hasher::HashAlgorithm;
 
 fn main() {
     env_logger::init().unwrap();
@@ -29,7 +29,7 @@ fn main() {
 
     info!("Given file path: {}", file_path);
 
-    if let Err(error) = hash_for(file_path, HashAlgorithms::of(algorithms)) {
+    if let Err(error) = hash_for(file_path, HashAlgorithm::of(algorithms)) {
         error!("Failed. error: {}", error);
         std::process::exit(error.raw_os_error().unwrap_or(1));
     };
@@ -67,7 +67,7 @@ fn extract_args() -> Result<Args, String> {
     }
 }
 
-fn hash_for(file_path: &str, hasher: HashAlgorithms) -> io::Result<()> {
+fn hash_for(file_path: &str, hasher: HashAlgorithm) -> io::Result<()> {
     use std::time::SystemTime;
     let start_time = SystemTime::now();
 

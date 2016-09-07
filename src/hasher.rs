@@ -4,26 +4,26 @@ pub trait HexHasher {
     fn hex_str(&self, read: &mut Read) -> String;
 }
 
-pub enum HashAlgorithms {
+pub enum HashAlgorithm {
     ShipHash,
     Sha1,
 }
 
-impl HexHasher for HashAlgorithms {
-    fn hex_str(&self, read: &mut Read) -> String {
-        match *self {
-            HashAlgorithms::ShipHash => create_hexstr_shiphash(read),
-            HashAlgorithms::Sha1 => create_hexstr_sha1(read),
+impl HashAlgorithm {
+    pub fn of(algorithm: &str) -> HashAlgorithm {
+        match algorithm {
+            "shiphash" => HashAlgorithm::ShipHash,
+            "sha1" => HashAlgorithm::Sha1,
+            _ => panic!("Invalid algorithm name is specified.")
         }
     }
 }
 
-impl HashAlgorithms {
-    pub fn of(algorithm: &str) -> HashAlgorithms {
-        match algorithm {
-            "shiphash" => HashAlgorithms::ShipHash,
-            "sha1" => HashAlgorithms::Sha1,
-            _ => panic!("Invalid algorithm name is specified.")
+impl HexHasher for HashAlgorithm {
+    fn hex_str(&self, read: &mut Read) -> String {
+        match *self {
+            HashAlgorithm::ShipHash => create_hexstr_shiphash(read),
+            HashAlgorithm::Sha1 => create_hexstr_sha1(read),
         }
     }
 }
