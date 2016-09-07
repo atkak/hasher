@@ -1,4 +1,6 @@
 use std::io::{Read, BufReader};
+use crypto;
+use crypto::digest::Digest;
 
 pub trait HexHasher {
     fn hex_str(&self, read: &mut Read) -> String;
@@ -7,6 +9,7 @@ pub trait HexHasher {
 pub enum HashAlgorithm {
     ShipHash,
     Sha1,
+    MD5,
 }
 
 impl HashAlgorithm {
@@ -14,6 +17,7 @@ impl HashAlgorithm {
         match algorithm {
             "shiphash" => HashAlgorithm::ShipHash,
             "sha1" => HashAlgorithm::Sha1,
+            "md5" => HashAlgorithm::MD5,
             _ => panic!("Invalid algorithm name is specified.")
         }
     }
@@ -23,7 +27,8 @@ impl HexHasher for HashAlgorithm {
     fn hex_str(&self, read: &mut Read) -> String {
         match *self {
             HashAlgorithm::ShipHash => create_hexstr_shiphash(read),
-            HashAlgorithm::Sha1 => create_hexstr_sha1(read),
+            HashAlgorithm::Sha1 => create_hexstr_with_digest(read, &mut crypto::sha1::Sha1::new()),
+            HashAlgorithm::MD5 => create_hexstr_with_digest(read, &mut crypto::md5::Md5::new()),
         }
     }
 }
@@ -42,12 +47,8 @@ fn create_hexstr_shiphash(read: &mut Read) -> String {
     format!("{:x}", hasher.finish())
 }
 
-fn create_hexstr_sha1(read: &mut Read) -> String {
-    use crypto::sha1::Sha1;
-    use crypto::digest::Digest;
-
+fn create_hexstr_with_digest(read: &mut Read, hasher: &mut Digest) -> String {
     let reader = BufReader::new(read);
-    let mut hasher = Sha1::new();
 
     for byte in reader.bytes() {
         hasher.input(&[byte.unwrap()]);

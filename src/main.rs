@@ -50,6 +50,9 @@ fn extract_args() -> Result<Args, String> {
         .subcommand(SubCommand::with_name("sha1")
             .about("using SHA1 algorithms")
             .arg(&file_path_arg))
+        .subcommand(SubCommand::with_name("md5")
+            .about("using MD5 algorithms")
+            .arg(&file_path_arg))
         .get_matches();
 
     match matches.subcommand() {
