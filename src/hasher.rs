@@ -18,6 +18,16 @@ impl HexHasher for HashAlgorithms {
     }
 }
 
+impl HashAlgorithms {
+    pub fn of(algorithm: &str) -> HashAlgorithms {
+        match algorithm {
+            "shiphash" => HashAlgorithms::ShipHash,
+            "sha1" => HashAlgorithms::Sha1,
+            _ => panic!("Invalid algorithm name is specified.")
+        }
+    }
+}
+
 fn create_hexstr_shiphash(read: &mut Read) -> String {
     use core::hash::SipHasher;
     use core::hash::Hasher;
