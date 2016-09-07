@@ -56,3 +56,32 @@ fn create_hexstr_with_digest(read: &mut Read, hasher: &mut Digest) -> String {
 
     hasher.result_str()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn siphash() {
+        let hasher = HashAlgorithm::of("siphash");
+        let digest = hasher.hex_str(&mut "test".as_bytes());
+
+        assert_eq!(digest, "3d5124c4cd58914e");
+    }
+
+    #[test]
+    fn sha1() {
+        let hasher = HashAlgorithm::of("sha1");
+        let digest = hasher.hex_str(&mut "test".as_bytes());
+
+        assert_eq!(digest, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3");
+    }
+
+    #[test]
+    fn md5() {
+        let hasher = HashAlgorithm::of("md5");
+        let digest = hasher.hex_str(&mut "test".as_bytes());
+
+        assert_eq!(digest, "098f6bcd4621d373cade4e832627b4f6");
+    }
+}
