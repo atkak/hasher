@@ -1,6 +1,24 @@
 use std::io::{Read, BufReader};
 
-pub fn calc_hash(read: &mut Read) -> String {
+pub trait HexHasher {
+    fn hex_str(&self, read: &mut Read) -> String;
+}
+
+pub enum HashAlgorithms {
+    ShipHash,
+    Sha1,
+}
+
+impl HexHasher for HashAlgorithms {
+    fn hex_str(&self, read: &mut Read) -> String {
+        match *self {
+            HashAlgorithms::ShipHash => create_hexstr_shiphash(read),
+            HashAlgorithms::Sha1 => create_hexstr_sha1(read),
+        }
+    }
+}
+
+fn create_hexstr_shiphash(read: &mut Read) -> String {
     use core::hash::SipHasher;
     use core::hash::Hasher;
 
@@ -12,4 +30,18 @@ pub fn calc_hash(read: &mut Read) -> String {
     }
 
     format!("{:x}", hasher.finish())
+}
+
+fn create_hexstr_sha1(read: &mut Read) -> String {
+    use crypto::sha1::Sha1;
+    use crypto::digest::Digest;
+
+    let reader = BufReader::new(read);
+    let mut hasher = Sha1::new();
+
+    for byte in reader.bytes() {
+        hasher.input(&[byte.unwrap()]);
+    }
+
+    hasher.result_str()
 }
