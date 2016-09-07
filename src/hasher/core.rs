@@ -7,7 +7,7 @@ pub trait HexHasher {
 }
 
 pub enum HashAlgorithm {
-    ShipHash,
+    SipHash,
     Sha1,
     MD5,
 }
@@ -15,7 +15,7 @@ pub enum HashAlgorithm {
 impl HashAlgorithm {
     pub fn of(algorithm: &str) -> HashAlgorithm {
         match algorithm {
-            "shiphash" => HashAlgorithm::ShipHash,
+            "siphash" => HashAlgorithm::SipHash,
             "sha1" => HashAlgorithm::Sha1,
             "md5" => HashAlgorithm::MD5,
             _ => panic!("Invalid algorithm name is specified.")
@@ -26,14 +26,14 @@ impl HashAlgorithm {
 impl HexHasher for HashAlgorithm {
     fn hex_str(&self, read: &mut Read) -> String {
         match *self {
-            HashAlgorithm::ShipHash => create_hexstr_shiphash(read),
+            HashAlgorithm::SipHash => create_hexstr_siphash(read),
             HashAlgorithm::Sha1 => create_hexstr_with_digest(read, &mut crypto::sha1::Sha1::new()),
             HashAlgorithm::MD5 => create_hexstr_with_digest(read, &mut crypto::md5::Md5::new()),
         }
     }
 }
 
-fn create_hexstr_shiphash(read: &mut Read) -> String {
+fn create_hexstr_siphash(read: &mut Read) -> String {
     use core::hash::SipHasher;
     use core::hash::Hasher;
 
