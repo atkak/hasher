@@ -9,12 +9,7 @@ extern crate crypto;
 mod hasher;
 
 use clap::{App, Arg, SubCommand};
-use colored::*;
-use std::io;
-use std::fs::File;
-use std::path::Path;
 use std::result::Result;
-use hasher::HashAlgorithm;
 
 fn main() {
     env_logger::init().unwrap();
@@ -29,7 +24,7 @@ fn main() {
 
     info!("Given file path: {}", file_path);
 
-    if let Err(error) = hash_for(file_path, HashAlgorithm::of(algorithms)) {
+    if let Err(error) = hasher::runner::run(file_path, algorithms) {
         error!("Failed. error: {}", error);
         std::process::exit(error.raw_os_error().unwrap_or(1));
     };
@@ -65,24 +60,4 @@ fn extract_args() -> Result<Args, String> {
             }),
         _ => Err(matches.usage().to_owned()),
     }
-}
-
-fn hash_for(file_path: &str, hasher: HashAlgorithm) -> io::Result<()> {
-    use std::time::SystemTime;
-    let start_time = SystemTime::now();
-
-    println!("{} {}", "Calculating".green(), file_path);
-
-    let path = Path::new(file_path);
-    let mut file = try!(File::open(&path));
-
-    use hasher::HexHasher;
-    let ref digest = hasher.hex_str(&mut file);
-
-    println!("{} {}", "Done".green(), digest);
-
-    let elapsed = start_time.elapsed().unwrap();
-    println!("{}.{:09} sec elapsed", elapsed.as_secs(), elapsed.subsec_nanos());
-
-    Ok(())
 }
